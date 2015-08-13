@@ -75,26 +75,21 @@ function ConvertToMarkdownFile() {
   
   // Create folder
   var id = DocumentApp.getActiveDocument().getId();
-  var file = DocsList.getFileById(id);
+  var file = DriveApp.getFileById(id);
   var parents = file.getParents();
   
-  if(parents.length > 1) {
-    Logger.log("File has multiple parent directory. Script does not work in this case"); 
-    DocumentApp.getUi().alert("Document must not be in multiple directories");
-    return; 
-  }
-  
-  if(parents.length == 0) {
+  if(! parents.hasNext()) {
     DocumentApp.getUi().alert("Document has to be in a directory for the export"); 
     return; 
   }
   
   // Use first parent
-  var parent = parents[0];
-  
-  // Check if target folder exists  
-  for(var folder in parent.getFolders()) {
-    folder = parent.getFolders()[folder]; 
+  var parent = parents.next();
+
+  // Check if target folder exists 
+  var folders = parent.getFolders();
+  while(folders.hasNext()) {
+    var folder = folders.next();
     
     if(folder.getName() == 'target') {
       var ui = DocumentApp.getUi(); 
